@@ -24,8 +24,6 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    print(f"{username=} {password=}")
-
     if not username or not password:
         return jsonify({"message": "Credenciais inválidas"}), 400
     
@@ -35,9 +33,6 @@ def login():
         return jsonify({"message": "Credenciais inválidas"}), 400
     
     login_user(user)
-    print(current_user)
-    print(current_user.is_authenticated)
-    
     return jsonify({"message": "Autenticação realizada com sucesso"})
 
 @app.route("/hello-world", methods=["GET"])
