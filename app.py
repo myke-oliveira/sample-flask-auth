@@ -114,11 +114,5 @@ def delete_user(user_id):
 
     return jsonify({"message": f"Usuário {user_id} deletado com sucesso."})
 
-
-
-@app.route("/hello-world", methods=["GET"])
-def hello_world():
-    return "Hello world"
-
 if __name__ == "__main__":
     app.run(debug=True)
