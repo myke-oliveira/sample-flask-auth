@@ -48,13 +48,13 @@ def create_user():
     username = data.get("username")
     password = data.get("password")
 
-    existent_user = User.query.filter_by(username=username)
+    if not username or not password:
+        return jsonify({"message": "Credenciais inválidas"}), 400
+    
+    existent_user = User.query.filter_by(username=username).first()
 
     if existent_user:
         return jsonify({"message": "Usuário já existe"}), 422
-
-    if not username or not password:
-        return jsonify({"message": "Credenciais inválidas"}), 400
 
     new_user = User(username=username, password=password)
     db.session.add(new_user)
