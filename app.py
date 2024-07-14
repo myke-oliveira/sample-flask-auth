@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from models.user import User
 from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+# from flask_api import status
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
@@ -40,6 +41,26 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logout realizado com sucesso"})
+
+@app.route("/user", methods=["POST"])
+def create_user():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+
+    existent_user = User.query.filter_by(username=username)
+
+    if existent_user:
+        return jsonify({"message": "Usuário já existe"}), 422
+
+    if not username or not password:
+        return jsonify({"message": "Credenciais inválidas"}), 400
+
+    new_user = User(username=username, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({"message": "Usuário criado com sucesso"})
 
 @app.route("/hello-world", methods=["GET"])
 def hello_world():
