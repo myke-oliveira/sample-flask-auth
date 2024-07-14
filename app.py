@@ -2,10 +2,21 @@ from flask import Flask, request, jsonify
 from models.user import User
 from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+DATA_BASE_CONNECTION_STRING = environ.get("DATA_BASE_CONNECTION_STRING")
+
+assert DATA_BASE_CONNECTION_STRING is not None, "Verifique seu `.env`!"
+
+print(f"{DATA_BASE_CONNECTION_STRING=}")
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = DATA_BASE_CONNECTION_STRING
+
+print(f"{app.config.get('SQLALCHEMY_DATABASE_URI')=}")
 
 login_manager = LoginManager()
 
