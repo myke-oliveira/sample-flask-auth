@@ -15,6 +15,32 @@ login_manager.init_app(app)
 
 login_manager.login_view = "login"
 
+@app.route("/user", methods=["POST"])
+def create_user():
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Credenciais inválidas"}), 400
+    
+    existent_user = User.query.filter_by(username=username).first()
+
+    if existent_user:
+        return jsonify({"message": "Usuário já existe"}), 422
+
+    new_user = User(username=username, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Usuário criado com sucesso",
+        "user": {
+            "id": new_user.id,
+            "username": new_user.username
+        }
+    })
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
@@ -41,26 +67,6 @@ def login():
 def logout():
     logout_user()
     return jsonify({"message": "Logout realizado com sucesso"})
-
-@app.route("/user", methods=["POST"])
-def create_user():
-    data = request.json
-    username = data.get("username")
-    password = data.get("password")
-
-    if not username or not password:
-        return jsonify({"message": "Credenciais inválidas"}), 400
-    
-    existent_user = User.query.filter_by(username=username).first()
-
-    if existent_user:
-        return jsonify({"message": "Usuário já existe"}), 422
-
-    new_user = User(username=username, password=password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({"message": "Usuário criado com sucesso"})
 
 @app.route("/user/<int:user_id>", methods=["GET"])
 @login_required
