@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from models.user import User
 from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
-# from flask_api import status
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "your_secret_key"
@@ -100,7 +99,20 @@ def update_user(user_id):
         }
     })
 
+@app.route("/user/<int:user_id>", methods=["DELETE"])
+@login_required
+def delete_user(user_id):
+    if user_id == current_user.id:
+        return jsonify({"message": "O usuário logado não pode ser deletado"})
 
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": "Usuário não encontrado"}), 404
+    
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": f"Usuário {user_id} deletado com sucesso."})
 
 
 
