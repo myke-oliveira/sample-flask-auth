@@ -76,6 +76,33 @@ def read_user(user_id):
         return jsonify({"message": "Usuário não encontrado"}), 404
     return jsonify({"id": user.id, "username": user.username})
 
+@app.route("/user/<int:user_id>", methods=["PUT"])
+@login_required
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": "Usuário não encontrado"}), 404
+    
+    data = request.json
+    password = data.get("password")
+
+    if not password:
+        return jsonify({"message": "Credenciais inválidas"}), 422
+    
+    user.password = password
+    db.session.commit()
+
+    return jsonify({
+        "message": "Usuário atualizado com sucesso",
+        "user": {
+            "id": user.id,
+            "username": user.username
+        }
+    })
+
+
+
+
 
 @app.route("/hello-world", methods=["GET"])
 def hello_world():
