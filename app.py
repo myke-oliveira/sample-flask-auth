@@ -49,7 +49,7 @@ def create_user():
             "id": new_user.id,
             "username": new_user.username
         }
-    })
+    }), 201
 
 @login_manager.user_loader
 def load_user(user_id):

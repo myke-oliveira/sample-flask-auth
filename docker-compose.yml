@@ -3,8 +3,8 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: 'admin123'
+      MYSQL_USER: 'application'
+      MYSQL_PASSWORD: 'application123'
       MYSQL_DATABASE: 'flask-crud'
       MYSQL_ROOT_PASSWORD: 'admin123'
     ports:
@@ -13,4 +13,4 @@ services:
       # Opens port 3306 on the container
       - '3306'
     volumes:
-      - /Users/gabrielcasemiro/Desktop/Rocketseat/mysql:/var/lib/mysql
+      - /workspaces/mysql:/var/lib/mysql
