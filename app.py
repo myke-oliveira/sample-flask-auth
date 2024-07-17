@@ -118,6 +118,9 @@ def update_user(user_id):
 @app.route("/user/<int:user_id>", methods=["DELETE"])
 @login_required
 def delete_user(user_id):
+    if current_user.role != 'admin':
+        return jsonify({"message": "Operação não permitida"}), 403
+
     if user_id == current_user.id:
         return jsonify({"message": "O usuário logado não pode ser deletado"})
 
