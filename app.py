@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from flask import Flask, request, jsonify
 from models.user import User
 from database import db
@@ -39,7 +41,7 @@ def create_user():
     if existent_user:
         return jsonify({"message": "Usuário já existe"}), 422
 
-    new_user = User(username=username, password=password)
+    new_user = User(username=username, password=password, role="user")
     db.session.add(new_user)
     db.session.commit()
 
@@ -93,6 +95,9 @@ def update_user(user_id):
     if not user:
         return jsonify({"message": "Usuário não encontrado"}), 404
     
+    if current_user.id != user_id and current_user.role != 'admin':
+        return jsonify({"message": "Operação não permitida."}), 403
+    
     data = request.json
     password = data.get("password")
 
@@ -124,6 +129,10 @@ def delete_user(user_id):
     db.session.commit()
 
     return jsonify({"message": f"Usuário {user_id} deletado com sucesso."})
+
+@app.route("/", methods=["GET"])
+def hello_world():
+    return jsonify({"hello": "word"})
 
 if __name__ == "__main__":
     app.run(debug=True)
