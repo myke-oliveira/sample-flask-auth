@@ -6,6 +6,7 @@ from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from dotenv import load_dotenv
 from os import environ
+import bcrypt
 
 load_dotenv()
 DATA_BASE_CONNECTION_STRING = environ.get("DATA_BASE_CONNECTION_STRING")
@@ -36,8 +37,10 @@ def create_user():
 
     if existent_user:
         return jsonify({"message": "Usuário já existe"}), 422
+    
+    hashed_password = bcrypt.hashpw(str.encode(password), bcrypt.gensalt())
 
-    new_user = User(username=username, password=password, role="user")
+    new_user = User(username=username, password=hashed_password, role="user")
     db.session.add(new_user)
     db.session.commit()
 
@@ -64,7 +67,7 @@ def login():
     
     user = User.query.filter_by(username=username).first()
 
-    if not user or not user.password == password:
+    if not user or not bcrypt.checkpw(str.encode(password), str.encode(user.password)):
         return jsonify({"message": "Credenciais inválidas"}), 400
     
     login_user(user)
